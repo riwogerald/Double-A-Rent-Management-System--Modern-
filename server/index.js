@@ -33,6 +33,7 @@ async function testConnection() {
     connection.release();
   } catch (error) {
     console.error('❌ Database connection failed:', error.message);
+    console.log('Please ensure MySQL is running and database exists');
   }
 }
 
@@ -168,39 +169,21 @@ app.get('/api/dashboard/stats', authenticateToken, async (req, res) => {
   }
 });
 
-// Properties routes
-app.get('/api/properties', authenticateToken, async (req, res) => {
-  try {
-    const [properties] = await pool.execute(`
-      SELECT p.*, l.name as landlord_name, e.name as estate_name 
-      FROM properties p 
-      LEFT JOIN landlords l ON p.landlord_id = l.id 
-      LEFT JOIN estates e ON p.estate_id = e.id
-      ORDER BY p.created_at DESC
-    `);
-    res.json(properties);
-  } catch (error) {
-    console.error('Properties fetch error:', error);
-    res.status(500).json({ error: 'Internal server error' });
-  }
-});
+// Import and use route modules
+const agentsRoutes = require('./routes/agents')(pool);
+const landlordsRoutes = require('./routes/landlords')(pool);
+const propertiesRoutes = require('./routes/properties')(pool);
+const tenantsRoutes = require('./routes/tenants')(pool);
+const rentPaymentsRoutes = require('./routes/rentPayments')(pool);
+const estatesRoutes = require('./routes/estates')(pool);
 
-app.post('/api/properties', authenticateToken, async (req, res) => {
-  try {
-    const { estate_id, landlord_id, agent_id, house_number, house_type, rent_amount, deposit_amount, description } = req.body;
-    
-    const [result] = await pool.execute(
-      `INSERT INTO properties (estate_id, landlord_id, agent_id, house_number, house_type, rent_amount, deposit_amount, description) 
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
-      [estate_id, landlord_id, agent_id, house_number, house_type, rent_amount, deposit_amount, description]
-    );
-    
-    res.status(201).json({ message: 'Property created successfully', id: result.insertId });
-  } catch (error) {
-    console.error('Property creation error:', error);
-    res.status(500).json({ error: 'Internal server error' });
-  }
-});
+// Use routes with authentication middleware
+app.use('/api/agents', authenticateToken, agentsRoutes);
+app.use('/api/landlords', authenticateToken, landlordsRoutes);
+app.use('/api/properties', authenticateToken, propertiesRoutes);
+app.use('/api/tenants', authenticateToken, tenantsRoutes);
+app.use('/api/rent-payments', authenticateToken, rentPaymentsRoutes);
+app.use('/api/estates', authenticateToken, estatesRoutes);
 
 // Business logic functions
 const calculatePenalty = (outstandingAmount, daysPastDue) => {
@@ -226,8 +209,15 @@ app.get('/api/utils/calculate-commission', authenticateToken, (req, res) => {
   res.json({ commission });
 });
 
+// Health check endpoint
+app.get('/api/health', (req, res) => {
+  res.json({ status: 'OK', timestamp: new Date().toISOString() });
+});
+
 // Start server
 app.listen(PORT, async () => {
   console.log(`🚀 Server running on port ${PORT}`);
+  console.log(`📊 Dashboard: http://localhost:5173`);
+  console.log(`🔗 API: http://localhost:${PORT}/api`);
   await testConnection();
 });

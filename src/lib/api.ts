@@ -53,10 +53,104 @@ export const dashboardAPI = {
   },
 }
 
+// Agents API
+export const agentsAPI = {
+  getAll: async () => {
+    const response = await api.get('/agents')
+    return response.data
+  },
+  
+  getById: async (id: number) => {
+    const response = await api.get(`/agents/${id}`)
+    return response.data
+  },
+  
+  create: async (agent: any) => {
+    const response = await api.post('/agents', agent)
+    return response.data
+  },
+  
+  update: async (id: number, agent: any) => {
+    const response = await api.put(`/agents/${id}`, agent)
+    return response.data
+  },
+  
+  delete: async (id: number) => {
+    const response = await api.delete(`/agents/${id}`)
+    return response.data
+  },
+}
+
+// Landlords API
+export const landlordsAPI = {
+  getAll: async () => {
+    const response = await api.get('/landlords')
+    return response.data
+  },
+  
+  getById: async (id: number) => {
+    const response = await api.get(`/landlords/${id}`)
+    return response.data
+  },
+  
+  create: async (landlord: any) => {
+    const response = await api.post('/landlords', landlord)
+    return response.data
+  },
+  
+  update: async (id: number, landlord: any) => {
+    const response = await api.put(`/landlords/${id}`, landlord)
+    return response.data
+  },
+  
+  delete: async (id: number) => {
+    const response = await api.delete(`/landlords/${id}`)
+    return response.data
+  },
+}
+
+// Estates API
+export const estatesAPI = {
+  getAll: async () => {
+    const response = await api.get('/estates')
+    return response.data
+  },
+  
+  getById: async (id: number) => {
+    const response = await api.get(`/estates/${id}`)
+    return response.data
+  },
+  
+  create: async (estate: any) => {
+    const response = await api.post('/estates', estate)
+    return response.data
+  },
+  
+  update: async (id: number, estate: any) => {
+    const response = await api.put(`/estates/${id}`, estate)
+    return response.data
+  },
+  
+  delete: async (id: number) => {
+    const response = await api.delete(`/estates/${id}`)
+    return response.data
+  },
+}
+
 // Properties API
 export const propertiesAPI = {
   getAll: async () => {
     const response = await api.get('/properties')
+    return response.data
+  },
+  
+  getVacant: async () => {
+    const response = await api.get('/properties/vacant')
+    return response.data
+  },
+  
+  getById: async (id: number) => {
+    const response = await api.get(`/properties/${id}`)
     return response.data
   },
   
@@ -72,6 +166,72 @@ export const propertiesAPI = {
   
   delete: async (id: number) => {
     const response = await api.delete(`/properties/${id}`)
+    return response.data
+  },
+}
+
+// Tenants API
+export const tenantsAPI = {
+  getAll: async () => {
+    const response = await api.get('/tenants')
+    return response.data
+  },
+  
+  getActive: async () => {
+    const response = await api.get('/tenants/active')
+    return response.data
+  },
+  
+  getById: async (id: number) => {
+    const response = await api.get(`/tenants/${id}`)
+    return response.data
+  },
+  
+  create: async (tenant: any) => {
+    const response = await api.post('/tenants', tenant)
+    return response.data
+  },
+  
+  update: async (id: number, tenant: any) => {
+    const response = await api.put(`/tenants/${id}`, tenant)
+    return response.data
+  },
+  
+  delete: async (id: number) => {
+    const response = await api.delete(`/tenants/${id}`)
+    return response.data
+  },
+}
+
+// Rent Payments API
+export const rentPaymentsAPI = {
+  getAll: async () => {
+    const response = await api.get('/rent-payments')
+    return response.data
+  },
+  
+  getByTenant: async (tenantId: number) => {
+    const response = await api.get(`/rent-payments/tenant/${tenantId}`)
+    return response.data
+  },
+  
+  getDefaulters: async () => {
+    const response = await api.get('/rent-payments/defaulters')
+    return response.data
+  },
+  
+  create: async (payment: any) => {
+    const response = await api.post('/rent-payments', payment)
+    return response.data
+  },
+  
+  update: async (id: number, payment: any) => {
+    const response = await api.put(`/rent-payments/${id}`, payment)
+    return response.data
+  },
+  
+  delete: async (id: number) => {
+    const response = await api.delete(`/rent-payments/${id}`)
     return response.data
   },
 }
