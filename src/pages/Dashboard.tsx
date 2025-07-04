@@ -1,38 +1,12 @@
 import React from 'react'
 import { useQuery } from '@tanstack/react-query'
-import { supabase } from '../lib/supabase'
+import { dashboardAPI } from '../lib/api'
 import { Building2, Users, CreditCard, TrendingUp } from 'lucide-react'
 
 const Dashboard: React.FC = () => {
   const { data: stats, isLoading } = useQuery({
     queryKey: ['dashboard-stats'],
-    queryFn: async () => {
-      const [
-        { count: totalProperties },
-        { count: occupiedProperties },
-        { count: totalTenants },
-        { data: recentPayments },
-      ] = await Promise.all([
-        supabase.from('properties').select('*', { count: 'exact', head: true }),
-        supabase.from('properties').select('*', { count: 'exact', head: true }).eq('status', 'Occupied'),
-        supabase.from('tenants').select('*', { count: 'exact', head: true }).eq('is_active', true),
-        supabase
-          .from('rent_payments')
-          .select('amount_paid')
-          .gte('payment_date', new Date(new Date().getFullYear(), new Date().getMonth(), 1).toISOString())
-      ])
-
-      const monthlyCollection = recentPayments?.reduce((sum, payment) => sum + payment.amount_paid, 0) || 0
-
-      return {
-        totalProperties: totalProperties || 0,
-        occupiedProperties: occupiedProperties || 0,
-        vacantProperties: (totalProperties || 0) - (occupiedProperties || 0),
-        totalTenants: totalTenants || 0,
-        monthlyCollection,
-        occupancyRate: totalProperties ? Math.round((occupiedProperties / totalProperties) * 100) : 0,
-      }
-    },
+    queryFn: dashboardAPI.getStats,
   })
 
   if (isLoading) {
