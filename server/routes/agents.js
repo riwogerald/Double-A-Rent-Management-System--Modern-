@@ -6,8 +6,13 @@ module.exports = (pool) => {
   router.get('/', async (req, res) => {
     try {
       const [agents] = await pool.execute(`
-        SELECT * FROM agents 
-        ORDER BY created_at DESC
+        SELECT a.*, 
+               COUNT(p.id) as property_count,
+               COALESCE(SUM(p.rent_amount), 0) as total_rent_value
+        FROM agents a
+        LEFT JOIN properties p ON a.id = p.agent_id
+        GROUP BY a.id
+        ORDER BY a.created_at DESC
       `);
       res.json(agents);
     } catch (error) {
