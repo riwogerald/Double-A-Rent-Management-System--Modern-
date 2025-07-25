@@ -7,7 +7,6 @@ import {
   UserCheck,
   CreditCard,
   BarChart3,
-  Settings,
   Building,
 } from 'lucide-react'
 
