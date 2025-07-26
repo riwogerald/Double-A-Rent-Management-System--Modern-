@@ -176,6 +176,7 @@ const propertiesRoutes = require('./routes/properties')(pool);
 const tenantsRoutes = require('./routes/tenants')(pool);
 const rentPaymentsRoutes = require('./routes/rentPayments')(pool);
 const estatesRoutes = require('./routes/estates')(pool);
+const reportsRoutes = require('./routes/reports');
 
 // Use routes with authentication middleware
 app.use('/api/agents', authenticateToken, agentsRoutes);
@@ -184,6 +185,7 @@ app.use('/api/properties', authenticateToken, propertiesRoutes);
 app.use('/api/tenants', authenticateToken, tenantsRoutes);
 app.use('/api/rent-payments', authenticateToken, rentPaymentsRoutes);
 app.use('/api/estates', authenticateToken, estatesRoutes);
+app.use('/api/reports', authenticateToken, reportsRoutes);
 
 // Business logic functions
 const calculatePenalty = (outstandingAmount, daysPastDue) => {
