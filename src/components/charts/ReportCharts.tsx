@@ -55,7 +55,7 @@ export const PropertyStatusChart: React.FC<ChartProps> = ({ data, title, classNa
             cx="50%"
             cy="50%"
             labelLine={false}
-            label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
+            label={({ name, percent }) => `${name} ${percent ? (percent * 100).toFixed(0) : 0}%`}
             outerRadius={80}
             fill="#8884d8"
             dataKey="value"
@@ -137,7 +137,7 @@ export const RevenueBreakdownChart: React.FC<ChartProps> = ({ data, title, class
             outerRadius={100}
             fill="#8884d8"
             dataKey="amount"
-            label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(1)}%`}
+            label={({ name, percent }) => `${name}: ${percent ? (percent * 100).toFixed(1) : 0}%`}
           >
             {data.map((entry, index) => (
               <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
