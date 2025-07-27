@@ -1,4 +1,4 @@
-import { api } from '../lib/api';
+import api from '../lib/api';
 import { format, startOfMonth, endOfMonth, subMonths, parseISO, differenceInDays } from 'date-fns';
 
 export interface RentCollectionData {
@@ -152,7 +152,7 @@ export class ReportService {
   // Chart Data Generators
   static async getRentCollectionChartData(months = 6): Promise<any[]> {
     try {
-      const data = [];
+      const data: any[] = [];
       for (let i = months - 1; i >= 0; i--) {
         const month = subMonths(new Date(), i);
         const rentData = await this.getRentCollectionData(startOfMonth(month), endOfMonth(month));
@@ -204,7 +204,7 @@ export class ReportService {
 
   static async getPaymentTrendData(months = 12): Promise<any[]> {
     try {
-      const data = [];
+      const data: any[] = [];
       for (let i = months - 1; i >= 0; i--) {
         const month = subMonths(new Date(), i);
         const rentData = await this.getRentCollectionData(startOfMonth(month), endOfMonth(month));
@@ -227,7 +227,7 @@ export class ReportService {
 
   static async getOccupancyRateData(months = 12): Promise<any[]> {
     try {
-      const data = [];
+      const data: any[] = [];
       for (let i = months - 1; i >= 0; i--) {
         const month = subMonths(new Date(), i);
         const summary = await this.getFinancialSummary(month);
