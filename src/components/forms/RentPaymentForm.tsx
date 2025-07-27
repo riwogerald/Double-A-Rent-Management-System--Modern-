@@ -97,10 +97,6 @@ const RentPaymentForm: React.FC<RentPaymentFormProps> = ({
     'Cheque'
   ]
 
-  const calculatePenalty = (outstandingAmount: number, daysPastDue: number): number => {
-    const dailyRate = 0.005 // 0.5%
-    return outstandingAmount * Math.pow(1 + dailyRate, daysPastDue) - outstandingAmount
-  }
 
   const balanceAfter = Math.max(0, 
     (parseFloat(formData.balance_before) || 0) + 
