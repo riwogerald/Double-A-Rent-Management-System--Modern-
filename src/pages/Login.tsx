@@ -35,19 +35,29 @@ const Login: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-secondary-50 py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-md w-full space-y-8">
-        <div>
-          <div className="flex justify-center">
-            <Building2 className="h-12 w-12 text-primary-600" />
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-primary-600 via-primary-700 to-secondary-800 py-12 px-4 sm:px-6 lg:px-8">
+      {/* Background decorative elements */}
+      <div className="absolute inset-0 overflow-hidden">
+        <div className="absolute top-10 left-10 w-32 h-32 bg-white bg-opacity-10 rounded-full blur-xl"></div>
+        <div className="absolute bottom-20 right-20 w-48 h-48 bg-primary-300 bg-opacity-20 rounded-full blur-2xl"></div>
+        <div className="absolute top-1/3 right-10 w-24 h-24 bg-secondary-400 bg-opacity-15 rounded-full blur-lg"></div>
+      </div>
+      
+      <div className="relative max-w-md w-full space-y-8">
+        <div className="bg-white rounded-2xl shadow-2xl p-8 backdrop-blur-sm border border-white border-opacity-20">
+          <div>
+            <div className="flex justify-center">
+              <div className="bg-gradient-to-r from-primary-600 to-primary-700 p-3 rounded-2xl shadow-lg">
+                <Building2 className="h-12 w-12 text-white" />
+              </div>
+            </div>
+            <h2 className="mt-6 text-center text-3xl font-bold bg-gradient-to-r from-secondary-900 to-secondary-700 bg-clip-text text-transparent">
+              {isSignUp ? 'Create your account' : 'Welcome back!'}
+            </h2>
+            <p className="mt-2 text-center text-sm text-secondary-600">
+              {isSignUp ? 'Join Double A Property Management' : 'Sign in to Double A Property Management'}
+            </p>
           </div>
-          <h2 className="mt-6 text-center text-3xl font-bold text-secondary-900">
-            {isSignUp ? 'Create your account' : 'Sign in to your account'}
-          </h2>
-          <p className="mt-2 text-center text-sm text-secondary-600">
-            Property Management System
-          </p>
-        </div>
         <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
           <div className="space-y-4">
             <div>
@@ -112,6 +122,7 @@ const Login: React.FC = () => {
             </button>
           </div>
         </form>
+        </div>
       </div>
     </div>
   )

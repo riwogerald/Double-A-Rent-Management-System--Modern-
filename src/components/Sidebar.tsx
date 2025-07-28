@@ -23,11 +23,13 @@ const navigation = [
 const Sidebar: React.FC = () => {
   return (
     <div className="hidden lg:fixed lg:inset-y-0 lg:z-50 lg:flex lg:w-64 lg:flex-col">
-      <div className="flex grow flex-col gap-y-5 overflow-y-auto bg-white px-6 pb-4 shadow-sm border-r border-secondary-200">
+      <div className="flex grow flex-col gap-y-5 overflow-y-auto bg-gradient-to-b from-primary-900 via-primary-800 to-primary-900 px-6 pb-4 shadow-2xl">
         <div className="flex h-16 shrink-0 items-center">
-          <Building2 className="h-8 w-8 text-primary-600" />
-          <span className="ml-2 text-xl font-bold text-secondary-900">
-            PropertyMS
+          <div className="bg-white bg-opacity-20 p-2 rounded-xl backdrop-blur-sm">
+            <Building2 className="h-8 w-8 text-white" />
+          </div>
+          <span className="ml-3 text-xl font-bold text-white">
+            Double A<span className="text-primary-200">MS</span>
           </span>
         </div>
         <nav className="flex flex-1 flex-col">
@@ -39,10 +41,10 @@ const Sidebar: React.FC = () => {
                     <NavLink
                       to={item.href}
                       className={({ isActive }) =>
-                        `group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-semibold transition-colors duration-200 ${
+                        `group flex gap-x-3 rounded-xl p-3 text-sm leading-6 font-semibold transition-all duration-200 ${
                           isActive
-                            ? 'bg-primary-50 text-primary-700'
-                            : 'text-secondary-700 hover:text-primary-700 hover:bg-secondary-50'
+                            ? 'bg-white bg-opacity-20 text-white shadow-lg backdrop-blur-sm'
+                            : 'text-primary-100 hover:text-white hover:bg-white hover:bg-opacity-10'
                         }`
                       }
                     >

@@ -187,6 +187,28 @@ app.use('/api/rent-payments', authenticateToken, rentPaymentsRoutes);
 app.use('/api/estates', authenticateToken, estatesRoutes);
 app.use('/api/reports', authenticateToken, reportsRoutes);
 
+// Mock data for testing
+const { generateMockData } = require('./mockData');
+
+app.post('/api/generate-mock-data', async (req, res) => {
+  try {
+    await generateMockData(pool);
+    res.status(201).json({ 
+      message: 'Comprehensive mock data generated successfully',
+      accounts: [
+        'admin@property.com / Admin123!',
+        'manager@property.com / Manager123!',
+        'agent1@property.com / Agent123!',
+        'agent2@property.com / Agent123!',
+        'test@example.com / Test123!'
+      ]
+    });
+  } catch (error) {
+    console.error('Mock data generation error:', error);
+    res.status(500).json({ error: 'Failed to generate mock data' });
+  }
+});
+
 // Business logic functions
 const calculatePenalty = (outstandingAmount, daysPastDue) => {
   const dailyRate = 0.005; // 0.5%
