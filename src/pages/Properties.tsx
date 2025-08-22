@@ -5,7 +5,7 @@ import DataTable, { Column, Action } from '../components/DataTable'
 import StatusBadge from '../components/StatusBadge'
 import Modal from '../components/Modal'
 import PropertyForm from '../components/forms/PropertyForm'
-import { Edit, Trash2, Eye, Building } from 'lucide-react'
+import { Edit, Trash2, Eye, Building, FileText } from 'lucide-react'
 
 const Properties: React.FC = () => {
   const [selectedProperty, setSelectedProperty] = useState<any>(null)
@@ -171,6 +171,16 @@ const Properties: React.FC = () => {
     setEditingProperty(null)
   }
 
+  const handleExportReport = async () => {
+    try {
+      const { generatePropertyReport } = await import('../utils/pdfGenerator');
+      await generatePropertyReport(properties);
+    } catch (error) {
+      console.error('Error generating property report:', error);
+      alert('Failed to generate property report. Please try again.');
+    }
+  };
+
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
@@ -180,6 +190,14 @@ const Properties: React.FC = () => {
             Manage your property portfolio
           </p>
         </div>
+        <button
+          onClick={handleExportReport}
+          className="btn-secondary flex items-center gap-2"
+          disabled={isLoading || properties.length === 0}
+        >
+          <FileText className="w-4 h-4" />
+          Export Report
+        </button>
       </div>
 
       {/* Properties Summary Cards */}

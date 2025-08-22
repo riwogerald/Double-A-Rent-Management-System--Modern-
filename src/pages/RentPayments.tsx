@@ -2,7 +2,8 @@ import React, { useState } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { rentPaymentsAPI, formatCurrency, formatDate } from '../lib/api'
 import DataTable, { Column, Action } from '../components/DataTable'
-import { Edit, Trash2, Eye, CreditCard, Calendar, AlertTriangle, Receipt } from 'lucide-react'
+import { Edit, Trash2, Eye, CreditCard, Calendar, AlertTriangle, Receipt, FileText } from 'lucide-react'
+import { generateRentReceipt } from '../components/ReceiptGenerator'
 
 const RentPayments: React.FC = () => {
   const [selectedPayment, setSelectedPayment] = useState<any>(null)
@@ -160,9 +161,19 @@ const RentPayments: React.FC = () => {
       icon: Receipt,
       label: 'View Receipt',
       onClick: (payment) => {
-        // TODO: Open receipt modal or generate PDF
-        console.log('View receipt:', payment)
-        alert('Receipt generation coming soon!')
+        generateRentReceipt({
+          receiptNumber: payment.receipt_number || payment.payment_no || `RCP-${payment.id}`,
+          tenantName: payment.tenant_name || 'Unknown Tenant',
+          propertyDetails: payment.property_details || 'Property not specified',
+          rentMonth: payment.rent_month || new Date().toISOString(),
+          amountPaid: payment.amount_paid || 0,
+          paymentMethod: payment.payment_method || 'Cash',
+          paymentDate: payment.payment_date || new Date().toISOString(),
+          balanceBefore: payment.balance_before || 0,
+          balanceAfter: payment.balance_after || 0,
+          penaltyAmount: payment.penalty_amount || 0,
+          notes: payment.notes || ''
+        });
       },
       variant: 'primary',
     },
@@ -198,10 +209,29 @@ const RentPayments: React.FC = () => {
   ]
 
   const handleRecordPayment = () => {
-    // TODO: Open record payment form
     console.log('Record new payment')
     alert('Record Payment form coming soon!')
   }
+
+  const handleExportReport = async () => {
+    try {
+      const { generateRentCollectionReport } = await import('../utils/pdfGenerator');
+      const reportData = payments.map(payment => ({
+        tenant: payment.tenant_name || 'Unknown',
+        property: payment.property_details || 'N/A',
+        rentAmount: payment.balance_before + payment.amount_paid || 0,
+        amountPaid: payment.amount_paid || 0,
+        status: payment.balance_after <= 0 ? 'Paid' : payment.amount_paid > 0 ? 'Partial' : 'Outstanding',
+        paymentDate: payment.payment_date ? formatDate(payment.payment_date) : 'Not paid',
+        dueDate: payment.rent_month ? formatDate(payment.rent_month) : 'N/A'
+      }));
+      
+      await generateRentCollectionReport(reportData);
+    } catch (error) {
+      console.error('Error generating payments report:', error);
+      alert('Failed to generate payments report. Please try again.');
+    }
+  };
 
   // Calculate summary statistics
   const totalPayments = payments.reduce((sum, p) => sum + (p.amount_paid || 0), 0)
@@ -221,6 +251,16 @@ const RentPayments: React.FC = () => {
           <p className="mt-1 text-sm text-secondary-600">
             Record and track rent payments
           </p>
+        </div>
+        <div className="flex gap-2">
+          <button
+            onClick={handleExportReport}
+            className="btn-secondary flex items-center gap-2"
+            disabled={isLoading || payments.length === 0}
+          >
+            <FileText className="w-4 h-4" />
+            Export Report
+          </button>
         </div>
       </div>
 

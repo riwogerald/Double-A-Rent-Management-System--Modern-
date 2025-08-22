@@ -283,17 +283,42 @@ export class ReportService {
 
   // Export Methods
   static async exportRentCollectionReport(data: RentCollectionData[]): Promise<void> {
-    const { generateRentCollectionReport } = await import('../utils/pdfGenerator');
-    await generateRentCollectionReport(data);
+    try {
+      const { generateRentCollectionReport } = await import('../utils/pdfGenerator');
+      await generateRentCollectionReport(data);
+    } catch (error) {
+      console.error('Error exporting rent collection report:', error);
+      throw new Error('Failed to export rent collection report');
+    }
   }
 
   static async exportAgentEarningsReport(data: AgentEarningsData[]): Promise<void> {
-    const { generateAgentEarningsReport } = await import('../utils/pdfGenerator');
-    await generateAgentEarningsReport(data);
+    try {
+      const { generateAgentEarningsReport } = await import('../utils/pdfGenerator');
+      await generateAgentEarningsReport(data);
+    } catch (error) {
+      console.error('Error exporting agent earnings report:', error);
+      throw new Error('Failed to export agent earnings report');
+    }
   }
 
   static async exportDefaultersReport(data: DefaulterData[]): Promise<void> {
-    const { generateDefaultersReport } = await import('../utils/pdfGenerator');
-    await generateDefaultersReport(data);
+    try {
+      const { generateDefaultersReport } = await import('../utils/pdfGenerator');
+      await generateDefaultersReport(data);
+    } catch (error) {
+      console.error('Error exporting defaulters report:', error);
+      throw new Error('Failed to export defaulters report');
+    }
+  }
+
+  static async exportPropertyReport(data: any[]): Promise<void> {
+    try {
+      const { generatePropertyReport } = await import('../utils/pdfGenerator');
+      await generatePropertyReport(data);
+    } catch (error) {
+      console.error('Error exporting property report:', error);
+      throw new Error('Failed to export property report');
+    }
   }
 }

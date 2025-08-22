@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Calendar, TrendingUp, TrendingDown, Building, Users, DollarSign } from 'lucide-react';
+import { Calendar, TrendingUp, TrendingDown, Building, Users, DollarSign, FileText } from 'lucide-react';
 import { ReportService, FinancialSummary } from '../../services/reportService';
 import {
   RentCollectionChart,
@@ -65,6 +65,16 @@ const AnalyticsDashboard: React.FC = () => {
     }
   };
 
+  const handleExportPDF = async () => {
+    try {
+      const { generateFinancialSummaryReport } = await import('../../utils/pdfGenerator');
+      await generateFinancialSummaryReport(financialSummary);
+    } catch (error) {
+      console.error('Error exporting PDF:', error);
+      alert('Failed to generate PDF report. Please try again.');
+    }
+  };
+
   if (loading) {
     return (
       <div className="flex items-center justify-center h-64">
@@ -76,11 +86,21 @@ const AnalyticsDashboard: React.FC = () => {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div>
-        <h2 className="text-2xl font-bold text-secondary-900">Analytics Dashboard</h2>
-        <p className="text-sm text-secondary-600">
-          Comprehensive overview of your property management performance
-        </p>
+      <div className="flex justify-between items-center">
+        <div>
+          <h2 className="text-2xl font-bold text-secondary-900">Analytics Dashboard</h2>
+          <p className="text-sm text-secondary-600">
+            Comprehensive overview of your property management performance
+          </p>
+        </div>
+        <button
+          onClick={handleExportPDF}
+          className="btn-primary flex items-center gap-2"
+          disabled={loading}
+        >
+          <FileText className="w-4 h-4" />
+          Export Summary
+        </button>
       </div>
 
       {/* Key Metrics Cards */}

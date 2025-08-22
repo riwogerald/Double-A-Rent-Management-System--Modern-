@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Download, AlertCircle, TrendingDown } from 'lucide-react';
+import { Download, AlertCircle, TrendingDown, FileText } from 'lucide-react';
 import { format } from 'date-fns';
 import { ReportService, DefaulterData } from '../../services/reportService';
 import DataTable from '../DataTable';
@@ -43,9 +43,20 @@ const DefaultersReport: React.FC = () => {
 
   const handleExportPDF = async () => {
     try {
-      await ReportService.exportDefaultersReport(data);
+      const { generateDefaultersReport } = await import('../../utils/pdfGenerator');
+      await generateDefaultersReport(
+        data.map(item => ({
+          tenant: item.tenant,
+          property: item.property,
+          rentAmount: item.rentAmount,
+          lastPayment: item.lastPayment,
+          outstandingAmount: item.outstandingAmount,
+          daysOverdue: item.daysOverdue
+        }))
+      );
     } catch (error) {
       console.error('Error exporting PDF:', error);
+      alert('Failed to generate PDF report. Please try again.');
     }
   };
 
@@ -68,7 +79,7 @@ const DefaultersReport: React.FC = () => {
           className="btn-primary flex items-center gap-2"
           disabled={loading || data.length === 0}
         >
-          <Download className="w-4 h-4" />
+          <FileText className="w-4 h-4" />
           Export PDF
         </button>
       </div>

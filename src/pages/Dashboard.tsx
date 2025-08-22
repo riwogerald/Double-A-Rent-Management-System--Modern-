@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import { dashboardAPI } from '../lib/api'
-import { Building2, Users, CreditCard, TrendingUp, Database } from 'lucide-react'
+import { Building2, Users, CreditCard, TrendingUp, Database, FileText, Mail } from 'lucide-react'
 import TestDataGenerator from '../components/TestDataGenerator'
 
 const Dashboard: React.FC = () => {
@@ -144,6 +144,30 @@ const Dashboard: React.FC = () => {
             </button>
             <button className="w-full bg-secondary-100 hover:bg-secondary-200 text-secondary-700 font-medium py-3 px-4 rounded-xl transition-all duration-200 transform hover:scale-105">
               📊 Generate Report
+            </button>
+            <button 
+              onClick={async () => {
+                try {
+                  const { generateFinancialSummaryReport } = await import('../utils/pdfGenerator');
+                  await generateFinancialSummaryReport({
+                    totalRevenue: stats?.monthlyCollection || 0,
+                    totalExpected: (stats?.monthlyCollection || 0) * 1.1,
+                    collectionRate: stats?.occupancyRate || 0,
+                    outstandingAmount: (stats?.monthlyCollection || 0) * 0.1,
+                    totalProperties: stats?.totalProperties || 0,
+                    occupiedProperties: stats?.totalProperties - stats?.vacantProperties || 0,
+                    vacantProperties: stats?.vacantProperties || 0,
+                    occupancyRate: stats?.occupancyRate || 0
+                  });
+                } catch (error) {
+                  console.error('Error generating dashboard report:', error);
+                  alert('Failed to generate dashboard report. Please try again.');
+                }
+              }}
+              className="w-full bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white font-medium py-3 px-4 rounded-xl transition-all duration-200 transform hover:scale-105 shadow-lg hover:shadow-xl"
+            >
+              <FileText className="h-4 w-4 inline mr-2" />
+              Export Dashboard PDF
             </button>
             <div className="border-t border-secondary-200 pt-3 mt-4">
               <button 

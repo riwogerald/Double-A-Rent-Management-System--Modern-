@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Calendar, Download, Filter, Users, DollarSign, TrendingUp } from 'lucide-react';
+import { Calendar, Download, Filter, Users, DollarSign, TrendingUp, FileText } from 'lucide-react';
 import { format, startOfMonth, endOfMonth } from 'date-fns';
 import { ReportService, AgentEarningsData } from '../../services/reportService';
 import { AgentPerformanceChart } from '../charts/ReportCharts';
@@ -71,9 +71,21 @@ const AgentEarningsReport: React.FC = () => {
 
   const handleExportPDF = async () => {
     try {
-      await ReportService.exportAgentEarningsReport(data);
+      const { generateAgentEarningsReport } = await import('../../utils/pdfGenerator');
+      await generateAgentEarningsReport(
+        data.map(item => ({
+          agent: item.agent,
+          properties: item.properties,
+          totalRentCollected: item.totalRentCollected,
+          commissionRate: item.commissionRate,
+          commissionEarned: item.commissionEarned
+        })),
+        chartRef.current || undefined,
+        { start: startDate, end: endDate }
+      );
     } catch (error) {
       console.error('Error exporting PDF:', error);
+      alert('Failed to generate PDF report. Please try again.');
     }
   };
 
@@ -110,7 +122,7 @@ const AgentEarningsReport: React.FC = () => {
           className="btn-primary flex items-center gap-2"
           disabled={loading || data.length === 0}
         >
-          <Download className="w-4 h-4" />
+          <FileText className="w-4 h-4" />
           Export PDF
         </button>
       </div>

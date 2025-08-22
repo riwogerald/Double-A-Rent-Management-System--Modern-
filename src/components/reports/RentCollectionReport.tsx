@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Calendar, Download, Filter, TrendingUp, TrendingDown } from 'lucide-react';
+import { Calendar, Download, Filter, TrendingUp, TrendingDown, FileText } from 'lucide-react';
 import { format, startOfMonth, endOfMonth } from 'date-fns';
 import { ReportService, RentCollectionData } from '../../services/reportService';
 import { RentCollectionChart } from '../charts/ReportCharts';
@@ -78,9 +78,23 @@ const RentCollectionReport: React.FC = () => {
 
   const handleExportPDF = async () => {
     try {
-      await ReportService.exportRentCollectionReport(data);
+      const { generateRentCollectionReport } = await import('../../utils/pdfGenerator');
+      await generateRentCollectionReport(
+        data.map(item => ({
+          tenant: item.tenant,
+          property: item.property,
+          rentAmount: item.rentAmount,
+          amountPaid: item.amountPaid,
+          status: item.status,
+          paymentDate: item.paymentDate,
+          dueDate: item.dueDate
+        })),
+        chartRef.current || undefined,
+        { start: startDate, end: endDate }
+      );
     } catch (error) {
       console.error('Error exporting PDF:', error);
+      alert('Failed to generate PDF report. Please try again.');
     }
   };
 
@@ -109,14 +123,16 @@ const RentCollectionReport: React.FC = () => {
             Track rent collection performance and payment status
           </p>
         </div>
-        <button
-          onClick={handleExportPDF}
-          className="btn-primary flex items-center gap-2"
-          disabled={loading || data.length === 0}
-        >
-          <Download className="w-4 h-4" />
-          Export PDF
-        </button>
+        <div className="flex gap-2">
+          <button
+            onClick={handleExportPDF}
+            className="btn-primary flex items-center gap-2"
+            disabled={loading || data.length === 0}
+          >
+            <FileText className="w-4 h-4" />
+            Export PDF
+          </button>
+        </div>
       </div>
 
       {/* Filters */}
