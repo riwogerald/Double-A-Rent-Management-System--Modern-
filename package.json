@@ -9,8 +9,13 @@
     "client": "vite",
     "server": "nodemon server/index.js",
     "build": "tsc && vite build",
+    "build:client": "vite build",
+    "build:server": "echo 'Server build complete'",
+    "start": "node server/index.js",
+    "start:client": "vite preview",
     "preview": "vite preview",
-    "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0"
+    "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
+    "deploy": "npm run build && npm run start"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.2.0",
@@ -36,6 +41,7 @@
     "@types/bcryptjs": "^2.4.6",
     "@types/cors": "^2.8.17",
     "@types/jsonwebtoken": "^9.0.5",
+    "@types/node": "^24.3.0",
     "@types/react": "^19.1.8",
     "@types/react-dom": "^19.1.6",
     "@typescript-eslint/eslint-plugin": "^8.38.0",
