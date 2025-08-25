@@ -15,7 +15,9 @@
     "start:client": "vite preview",
     "preview": "vite preview",
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
-    "deploy": "npm run build && npm run start"
+    "deploy": "npm run build && npm run start",
+    "setup-db": "node setup_portfolio_db.js",
+    "portfolio-setup": "npm run setup-db && echo Portfolio database ready! Run npm run dev to start the application"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.2.0",

@@ -12,10 +12,11 @@ const Login: React.FC = () => {
   const [showPassword, setShowPassword] = useState(false)
   
   const demoAccounts = [
-    { email: 'admin@property.com', password: 'Admin123!', role: 'Administrator' },
-    { email: 'manager@property.com', password: 'Manager123!', role: 'Manager' },
-    { email: 'agent1@property.com', password: 'Agent123!', role: 'Agent' },
-    { email: 'test@example.com', password: 'Test123!', role: 'User' }
+    { email: 'admin@property.com', password: 'Demo123!', role: 'Administrator' },
+    { email: 'manager@property.com', password: 'Demo123!', role: 'Property Manager' },
+    { email: 'agent1@property.com', password: 'Demo123!', role: 'Sarah Johnson - Agent' },
+    { email: 'agent2@property.com', password: 'Demo123!', role: 'Michael Chen - Agent' },
+    { email: 'test@example.com', password: 'Demo123!', role: 'Test User' }
   ]
   
   const useDemoAccount = (demoEmail: string, demoPassword: string) => {
