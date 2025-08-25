@@ -233,31 +233,50 @@ export class PDFGenerator {
   }
 
   private addFooter(): void {
-    const pageCount = this.pdf.getNumberOfPages();
+    // Track pages manually to avoid jsPDF version compatibility issues
+    let pageCount = 1;
+    try {
+      // Try different methods to get page count, fallback to manual tracking
+      if (typeof (this.pdf as any).getNumberOfPages === 'function') {
+        pageCount = (this.pdf as any).getNumberOfPages();
+      } else if (this.pdf.internal && typeof (this.pdf.internal as any).getNumberOfPages === 'function') {
+        pageCount = (this.pdf.internal as any).getNumberOfPages();
+      } else {
+        // Fallback: estimate based on content added
+        pageCount = Math.max(1, Math.ceil(this.currentY / this.pageHeight));
+      }
+    } catch (error) {
+      console.warn('Could not determine page count, defaulting to 1:', error);
+      pageCount = 1;
+    }
     
     for (let i = 1; i <= pageCount; i++) {
-      this.pdf.setPage(i);
-      
-      // Footer line
-      this.pdf.setDrawColor(200, 200, 200);
-      this.pdf.line(this.margin, this.pageHeight - 15, this.pageWidth - this.margin, this.pageHeight - 15);
-      
-      // Page number
-      this.pdf.setFontSize(8);
-      this.pdf.setFont('helvetica', 'normal');
-      this.pdf.setTextColor(100, 100, 100);
-      this.pdf.text(
-        `Page ${i} of ${pageCount}`,
-        this.pageWidth - this.margin - 20,
-        this.pageHeight - 8
-      );
-      
-      // Company name
-      this.pdf.text(
-        'Double A Rent Management System',
-        this.margin,
-        this.pageHeight - 8
-      );
+      try {
+        this.pdf.setPage(i);
+        
+        // Footer line
+        this.pdf.setDrawColor(200, 200, 200);
+        this.pdf.line(this.margin, this.pageHeight - 15, this.pageWidth - this.margin, this.pageHeight - 15);
+        
+        // Page number
+        this.pdf.setFontSize(8);
+        this.pdf.setFont('helvetica', 'normal');
+        this.pdf.setTextColor(100, 100, 100);
+        this.pdf.text(
+          `Page ${i} of ${pageCount}`,
+          this.pageWidth - this.margin - 20,
+          this.pageHeight - 8
+        );
+        
+        // Company name
+        this.pdf.text(
+          'Double A Rent Management System',
+          this.margin,
+          this.pageHeight - 8
+        );
+      } catch (error) {
+        console.warn(`Could not add footer to page ${i}:`, error);
+      }
     }
   }
 
