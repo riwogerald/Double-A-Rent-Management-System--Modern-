@@ -190,13 +190,13 @@ CREATE INDEX IF NOT EXISTS idx_commission_payments_agent ON commission_payments(
 CREATE INDEX IF NOT EXISTS idx_commission_payments_landlord ON commission_payments(landlord_id);
 
 -- Insert demo users with pre-hashed passwords (Demo123!)
--- Password hash: $2a$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi
+-- Password hash: $2b$10$mQksT.AfsUK9.PJOjVz9VuzBkTQHmppVlWlbKUWLyK8HjXro.rSse (bcrypt)
 INSERT OR IGNORE INTO users (email, password) VALUES 
-('admin@property.com', '$2a$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi'),
-('manager@property.com', '$2a$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi'),
-('agent1@property.com', '$2a$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi'),
-('agent2@property.com', '$2a$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi'),
-('test@example.com', '$2a$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi');
+('admin@property.com', '$2b$10$mQksT.AfsUK9.PJOjVz9VuzBkTQHmppVlWlbKUWLyK8HjXro.rSse'),
+('manager@property.com', '$2b$10$mQksT.AfsUK9.PJOjVz9VuzBkTQHmppVlWlbKUWLyK8HjXro.rSse'),
+('agent1@property.com', '$2b$10$mQksT.AfsUK9.PJOjVz9VuzBkTQHmppVlWlbKUWLyK8HjXro.rSse'),
+('agent2@property.com', '$2b$10$mQksT.AfsUK9.PJOjVz9VuzBkTQHmppVlWlbKUWLyK8HjXro.rSse'),
+('test@example.com', '$2b$10$mQksT.AfsUK9.PJOjVz9VuzBkTQHmppVlWlbKUWLyK8HjXro.rSse');
 
 -- Insert demo estates
 INSERT OR IGNORE INTO estates (name, location, description) VALUES 
