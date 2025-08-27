@@ -2,11 +2,15 @@ import React, { useState } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { rentPaymentsAPI, formatCurrency, formatDate } from '../lib/api'
 import DataTable, { Column, Action } from '../components/DataTable'
+import Modal from '../components/Modal'
+import RentPaymentForm from '../components/forms/RentPaymentForm'
 import { Edit, Trash2, Eye, CreditCard, Calendar, AlertTriangle, Receipt, FileText } from 'lucide-react'
 import { generateRentReceipt } from '../components/ReceiptGenerator'
 
 const RentPayments: React.FC = () => {
   const [selectedPayment, setSelectedPayment] = useState<any>(null)
+  const [isFormOpen, setIsFormOpen] = useState(false)
+  const [editingPayment, setEditingPayment] = useState<any>(null)
   const queryClient = useQueryClient()
 
   // Fetch rent payments
@@ -15,11 +19,42 @@ const RentPayments: React.FC = () => {
     queryFn: rentPaymentsAPI.getAll,
   })
 
+  // Create mutation
+  const createMutation = useMutation({
+    mutationFn: rentPaymentsAPI.create,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['rent-payments'] })
+      queryClient.invalidateQueries({ queryKey: ['tenants'] })
+      setIsFormOpen(false)
+      setEditingPayment(null)
+      alert('Payment recorded successfully')
+    },
+    onError: (error: any) => {
+      alert(error.response?.data?.error || 'Failed to record payment')
+    },
+  })
+
+  // Update mutation
+  const updateMutation = useMutation({
+    mutationFn: ({ id, data }: { id: number, data: any }) => rentPaymentsAPI.update(id, data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['rent-payments'] })
+      queryClient.invalidateQueries({ queryKey: ['tenants'] })
+      setIsFormOpen(false)
+      setEditingPayment(null)
+      alert('Payment updated successfully')
+    },
+    onError: (error: any) => {
+      alert(error.response?.data?.error || 'Failed to update payment')
+    },
+  })
+
   // Delete mutation
   const deleteMutation = useMutation({
     mutationFn: rentPaymentsAPI.delete,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['rent-payments'] })
+      queryClient.invalidateQueries({ queryKey: ['tenants'] })
       alert('Payment deleted successfully')
     },
     onError: (error: any) => {
@@ -191,8 +226,8 @@ const RentPayments: React.FC = () => {
       icon: Edit,
       label: 'Edit Payment',
       onClick: (payment) => {
-        // TODO: Open edit form
-        console.log('Edit payment:', payment)
+        setEditingPayment(payment)
+        setIsFormOpen(true)
       },
       variant: 'secondary',
     },
@@ -209,8 +244,21 @@ const RentPayments: React.FC = () => {
   ]
 
   const handleRecordPayment = () => {
-    console.log('Record new payment')
-    alert('Record Payment form coming soon!')
+    setEditingPayment(null)
+    setIsFormOpen(true)
+  }
+
+  const handleFormSubmit = (data: any) => {
+    if (editingPayment) {
+      updateMutation.mutate({ id: editingPayment.id, data })
+    } else {
+      createMutation.mutate(data)
+    }
+  }
+
+  const handleCancel = () => {
+    setIsFormOpen(false)
+    setEditingPayment(null)
   }
 
   const handleExportReport = async () => {
@@ -381,6 +429,21 @@ const RentPayments: React.FC = () => {
         addButtonText="Record Payment"
         emptyMessage="No payments found. Record your first payment to get started."
       />
+
+      {/* Payment Form Modal */}
+      <Modal 
+        isOpen={isFormOpen} 
+        onClose={handleCancel}
+        title={editingPayment ? 'Edit Payment' : 'Record New Payment'}
+        size="lg"
+      >
+        <RentPaymentForm
+          payment={editingPayment}
+          onSubmit={handleFormSubmit}
+          onCancel={handleCancel}
+          isLoading={createMutation.isPending || updateMutation.isPending}
+        />
+      </Modal>
     </div>
   )
 }

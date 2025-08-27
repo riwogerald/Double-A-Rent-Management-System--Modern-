@@ -1,5 +1,6 @@
 import React, { useState } from 'react'
 import { Search, Plus } from 'lucide-react'
+import LoadingSpinner from './LoadingSpinner'
 
 export interface Column {
   key: string
@@ -100,7 +101,7 @@ const DataTable: React.FC<DataTableProps> = ({
     return (
       <div className="card">
         <div className="flex items-center justify-center h-64">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-600"></div>
+          <LoadingSpinner size="large" text="Loading data..." />
         </div>
       </div>
     )

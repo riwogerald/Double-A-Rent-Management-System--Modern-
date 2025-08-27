@@ -3,16 +3,48 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { landlordsAPI } from '../lib/api'
 import DataTable, { Column, Action } from '../components/DataTable'
 import StatusBadge from '../components/StatusBadge'
+import Modal from '../components/Modal'
+import LandlordForm from '../components/forms/LandlordForm'
 import { Edit, Trash2, Eye, Users, Phone, Mail, CreditCard } from 'lucide-react'
 
 const Landlords: React.FC = () => {
   const [selectedLandlord, setSelectedLandlord] = useState<any>(null)
+  const [isFormOpen, setIsFormOpen] = useState(false)
+  const [editingLandlord, setEditingLandlord] = useState<any>(null)
   const queryClient = useQueryClient()
 
   // Fetch landlords
   const { data: landlords = [], isLoading } = useQuery({
     queryKey: ['landlords'],
     queryFn: landlordsAPI.getAll,
+  })
+
+  // Create mutation
+  const createMutation = useMutation({
+    mutationFn: landlordsAPI.create,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['landlords'] })
+      setIsFormOpen(false)
+      setEditingLandlord(null)
+      alert('Landlord created successfully')
+    },
+    onError: (error: any) => {
+      alert(error.response?.data?.error || 'Failed to create landlord')
+    },
+  })
+
+  // Update mutation
+  const updateMutation = useMutation({
+    mutationFn: ({ id, data }: { id: number, data: any }) => landlordsAPI.update(id, data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['landlords'] })
+      setIsFormOpen(false)
+      setEditingLandlord(null)
+      alert('Landlord updated successfully')
+    },
+    onError: (error: any) => {
+      alert(error.response?.data?.error || 'Failed to update landlord')
+    },
   })
 
   // Delete mutation
@@ -122,8 +154,8 @@ const Landlords: React.FC = () => {
       icon: Edit,
       label: 'Edit Landlord',
       onClick: (landlord) => {
-        // TODO: Open edit form
-        console.log('Edit landlord:', landlord)
+        setEditingLandlord(landlord)
+        setIsFormOpen(true)
       },
       variant: 'secondary',
     },
@@ -140,9 +172,21 @@ const Landlords: React.FC = () => {
   ]
 
   const handleAddLandlord = () => {
-    // TODO: Open add landlord form
-    console.log('Add new landlord')
-    alert('Add Landlord form coming soon!')
+    setEditingLandlord(null)
+    setIsFormOpen(true)
+  }
+
+  const handleFormSubmit = (data: any) => {
+    if (editingLandlord) {
+      updateMutation.mutate({ id: editingLandlord.id, data })
+    } else {
+      createMutation.mutate(data)
+    }
+  }
+
+  const handleCancel = () => {
+    setIsFormOpen(false)
+    setEditingLandlord(null)
   }
 
   const activeLandlords = landlords.filter(l => l.is_active)
@@ -223,6 +267,21 @@ const Landlords: React.FC = () => {
         addButtonText="Add Landlord"
         emptyMessage="No landlords found. Add your first landlord to get started."
       />
+
+      {/* Landlord Form Modal */}
+      <Modal 
+        isOpen={isFormOpen} 
+        onClose={handleCancel}
+        title={editingLandlord ? 'Edit Landlord' : 'Add New Landlord'}
+        size="lg"
+      >
+        <LandlordForm
+          landlord={editingLandlord}
+          onSubmit={handleFormSubmit}
+          onCancel={handleCancel}
+          isLoading={createMutation.isPending || updateMutation.isPending}
+        />
+      </Modal>
     </div>
   )
 }

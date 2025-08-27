@@ -117,20 +117,41 @@
 ## 🚀 Quick Start (Portfolio Setup)
 
 ### Prerequisites
-- **Node.js** (v16 or higher)
-- **MySQL** (v8.0 or higher)
-- **npm** or **yarn**
+- **Node.js** (v18.0.0 or higher) - [Download here](https://nodejs.org/)
+- **Git** - [Download here](https://git-scm.com/)
+- **Modern web browser** (Chrome, Firefox, Safari, Edge)
 
-### One-Command Setup
+### ⚡ One-Command Setup
 ```bash
+# Clone the repository
 git clone <repository-url>
 cd Double-A-Rent-Management-System--Modern-
+
+# Install dependencies and setup database
 npm install
-npm run portfolio-setup
+npm run setup-db
+
+# Start the application
 npm run dev
 ```
 
-### Manual Setup (Detailed)
+**That's it! 🎉** The application will be running at:
+- 🌐 **Frontend**: http://localhost:5173
+- 🔗 **Backend API**: http://localhost:5000/api
+
+### 🎯 Demo Login Credentials
+
+| Role | Email | Password |
+|------|-------|----------|
+| 👑 **Admin** | `admin@property.com` | `Demo123!` |
+| 👨‍💼 **Manager** | `manager@property.com` | `Demo123!` |
+| 🏠 **Agent** | `agent1@property.com` | `Demo123!` |
+| 📧 **Test User** | `test@example.com` | `Demo123!` |
+
+### 🛠️ Manual Setup (If Needed)
+
+<details>
+<summary>Click to expand detailed setup instructions</summary>
 
 #### 1. **Clone and Install**
 ```bash
@@ -140,34 +161,35 @@ npm install
 ```
 
 #### 2. **Environment Configuration**
-The `.env` file is pre-configured for portfolio use:
+The `.env` file is pre-configured for development:
 ```env
-DB_HOST=localhost
-DB_USER=root
-DB_PASSWORD=
+# No changes needed for local development!
 DB_NAME=property_management_portfolio
 JWT_SECRET=portfolio-demo-jwt-secret-key-2025
 PORT=5000
+NODE_ENV=development
 ```
 
-#### 3. **Database Setup with Demo Data**
+#### 3. **Database Setup**
 ```bash
-# Option 1: Automated setup with demo data
-npm run portfolio-setup
-
-# Option 2: Manual setup
+# Setup SQLite database with demo data
 npm run setup-db
+
+# Alternative portfolio setup
+npm run portfolio-setup
 ```
 
-#### 4. **Start the Application**
+#### 4. **Start Development Servers**
 ```bash
+# Start both frontend and backend
 npm run dev
+
+# Or start individually:
+npm run client  # Frontend only (port 5173)
+npm run server  # Backend only (port 5000)
 ```
 
-**Access Points:**
-- 🌐 **Frontend**: http://localhost:5173
-- 🔗 **Backend API**: http://localhost:5000/api
-- 📊 **Live Demo**: https://double-a-man-sys.netlify.app/
+</details>
 
 ## 📊 Demo Data Overview
 
@@ -320,11 +342,27 @@ company_expenses (receipt_no, description, amount, category, vendor)
 
 ## 🎉 Getting Started
 
-1. **Explore the Live Demo**: [https://double-a-man-sys.netlify.app/](https://double-a-man-sys.netlify.app/)
-2. **Try Demo Accounts**: Use any demo account with password `Demo123!`
-3. **Local Development**: Follow the quick start guide above
-4. **Review the Code**: Examine the comprehensive codebase
-5. **Test Features**: Explore all management modules
+### 🌐 Option 1: Live Demo (Recommended)
+**[🚀 View Live Application](https://double-a-man-sys.netlify.app/)**
+
+1. Click the live demo link above
+2. Login with: `admin@property.com` / `Demo123!`
+3. Explore all features instantly!
+
+### 💻 Option 2: Local Development
+1. **Clone & Setup**: Run the one-command setup above
+2. **Login**: Use `admin@property.com` / `Demo123!`
+3. **Explore**: Navigate through all management modules
+4. **Test CRUD**: Add, edit, and delete records
+5. **Generate Reports**: Try the PDF export features
+
+### 🎯 What to Test
+- ✅ **Dashboard**: View analytics and KPIs
+- ✅ **Properties**: Manage property listings
+- ✅ **Tenants**: Add/edit tenant information
+- ✅ **Rent Payments**: Record payment transactions
+- ✅ **Reports**: Generate PDF reports and analytics
+- ✅ **Responsive Design**: Test on mobile/tablet
 
 ---
 

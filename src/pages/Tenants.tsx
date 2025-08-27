@@ -3,10 +3,14 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { tenantsAPI, formatCurrency, formatDate } from '../lib/api'
 import DataTable, { Column, Action } from '../components/DataTable'
 import StatusBadge from '../components/StatusBadge'
+import Modal from '../components/Modal'
+import TenantForm from '../components/forms/TenantForm'
 import { Edit, Trash2, Eye, Users, Phone, Mail, Calendar } from 'lucide-react'
 
 const Tenants: React.FC = () => {
   const [selectedTenant, setSelectedTenant] = useState<any>(null)
+  const [isFormOpen, setIsFormOpen] = useState(false)
+  const [editingTenant, setEditingTenant] = useState<any>(null)
   const queryClient = useQueryClient()
 
   // Fetch tenants
@@ -15,11 +19,42 @@ const Tenants: React.FC = () => {
     queryFn: tenantsAPI.getAll,
   })
 
+  // Create mutation
+  const createMutation = useMutation({
+    mutationFn: tenantsAPI.create,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['tenants'] })
+      queryClient.invalidateQueries({ queryKey: ['properties'] })
+      setIsFormOpen(false)
+      setEditingTenant(null)
+      alert('Tenant created successfully')
+    },
+    onError: (error: any) => {
+      alert(error.response?.data?.error || 'Failed to create tenant')
+    },
+  })
+
+  // Update mutation
+  const updateMutation = useMutation({
+    mutationFn: ({ id, data }: { id: number, data: any }) => tenantsAPI.update(id, data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['tenants'] })
+      queryClient.invalidateQueries({ queryKey: ['properties'] })
+      setIsFormOpen(false)
+      setEditingTenant(null)
+      alert('Tenant updated successfully')
+    },
+    onError: (error: any) => {
+      alert(error.response?.data?.error || 'Failed to update tenant')
+    },
+  })
+
   // Delete mutation
   const deleteMutation = useMutation({
     mutationFn: tenantsAPI.delete,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['tenants'] })
+      queryClient.invalidateQueries({ queryKey: ['properties'] })
       alert('Tenant deleted successfully')
     },
     onError: (error: any) => {
@@ -123,8 +158,8 @@ const Tenants: React.FC = () => {
       icon: Edit,
       label: 'Edit Tenant',
       onClick: (tenant) => {
-        // TODO: Open edit form
-        console.log('Edit tenant:', tenant)
+        setEditingTenant(tenant)
+        setIsFormOpen(true)
       },
       variant: 'secondary',
     },
@@ -141,9 +176,21 @@ const Tenants: React.FC = () => {
   ]
 
   const handleAddTenant = () => {
-    // TODO: Open add tenant form
-    console.log('Add new tenant')
-    alert('Add Tenant form coming soon!')
+    setEditingTenant(null)
+    setIsFormOpen(true)
+  }
+
+  const handleFormSubmit = (data: any) => {
+    if (editingTenant) {
+      updateMutation.mutate({ id: editingTenant.id, data })
+    } else {
+      createMutation.mutate(data)
+    }
+  }
+
+  const handleCancel = () => {
+    setIsFormOpen(false)
+    setEditingTenant(null)
   }
 
   const activeTenants = tenants.filter(t => t.is_active)
@@ -226,6 +273,21 @@ const Tenants: React.FC = () => {
         addButtonText="Add Tenant"
         emptyMessage="No tenants found. Add your first tenant to get started."
       />
+
+      {/* Tenant Form Modal */}
+      <Modal 
+        isOpen={isFormOpen} 
+        onClose={handleCancel}
+        title={editingTenant ? 'Edit Tenant' : 'Add New Tenant'}
+        size="lg"
+      >
+        <TenantForm
+          tenant={editingTenant}
+          onSubmit={handleFormSubmit}
+          onCancel={handleCancel}
+          isLoading={createMutation.isPending || updateMutation.isPending}
+        />
+      </Modal>
     </div>
   )
 }

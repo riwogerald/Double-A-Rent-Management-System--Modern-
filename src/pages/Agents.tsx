@@ -3,16 +3,48 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { agentsAPI } from '../lib/api'
 import DataTable, { Column, Action } from '../components/DataTable'
 import StatusBadge from '../components/StatusBadge'
+import Modal from '../components/Modal'
+import AgentForm from '../components/forms/AgentForm'
 import { Edit, Trash2, Eye, Users, Phone, Mail, Percent } from 'lucide-react'
 
 const Agents: React.FC = () => {
   const [selectedAgent, setSelectedAgent] = useState<any>(null)
+  const [isFormOpen, setIsFormOpen] = useState(false)
+  const [editingAgent, setEditingAgent] = useState<any>(null)
   const queryClient = useQueryClient()
 
   // Fetch agents
   const { data: agents = [], isLoading } = useQuery({
     queryKey: ['agents'],
     queryFn: agentsAPI.getAll,
+  })
+
+  // Create mutation
+  const createMutation = useMutation({
+    mutationFn: agentsAPI.create,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['agents'] })
+      setIsFormOpen(false)
+      setEditingAgent(null)
+      alert('Agent created successfully')
+    },
+    onError: (error: any) => {
+      alert(error.response?.data?.error || 'Failed to create agent')
+    },
+  })
+
+  // Update mutation
+  const updateMutation = useMutation({
+    mutationFn: ({ id, data }: { id: number, data: any }) => agentsAPI.update(id, data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['agents'] })
+      setIsFormOpen(false)
+      setEditingAgent(null)
+      alert('Agent updated successfully')
+    },
+    onError: (error: any) => {
+      alert(error.response?.data?.error || 'Failed to update agent')
+    },
   })
 
   // Delete mutation
@@ -115,8 +147,8 @@ const Agents: React.FC = () => {
       icon: Edit,
       label: 'Edit Agent',
       onClick: (agent) => {
-        // TODO: Open edit form
-        console.log('Edit agent:', agent)
+        setEditingAgent(agent)
+        setIsFormOpen(true)
       },
       variant: 'secondary',
     },
@@ -133,9 +165,21 @@ const Agents: React.FC = () => {
   ]
 
   const handleAddAgent = () => {
-    // TODO: Open add agent form
-    console.log('Add new agent')
-    alert('Add Agent form coming soon!')
+    setEditingAgent(null)
+    setIsFormOpen(true)
+  }
+
+  const handleFormSubmit = (data: any) => {
+    if (editingAgent) {
+      updateMutation.mutate({ id: editingAgent.id, data })
+    } else {
+      createMutation.mutate(data)
+    }
+  }
+
+  const handleCancel = () => {
+    setIsFormOpen(false)
+    setEditingAgent(null)
   }
 
   const activeAgents = agents.filter(a => a.is_active)
@@ -217,6 +261,21 @@ const Agents: React.FC = () => {
         addButtonText="Add Agent"
         emptyMessage="No agents found. Add your first agent to get started."
       />
+
+      {/* Agent Form Modal */}
+      <Modal 
+        isOpen={isFormOpen} 
+        onClose={handleCancel}
+        title={editingAgent ? 'Edit Agent' : 'Add New Agent'}
+        size="lg"
+      >
+        <AgentForm
+          agent={editingAgent}
+          onSubmit={handleFormSubmit}
+          onCancel={handleCancel}
+          isLoading={createMutation.isPending || updateMutation.isPending}
+        />
+      </Modal>
     </div>
   )
 }
